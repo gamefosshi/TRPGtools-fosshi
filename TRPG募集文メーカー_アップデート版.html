@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRPGセッション募集文メーカー</title>
+
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        padding: 24px;
+        font-family: "Noto Sans JP", sans-serif;
+        background: #f2f2f2;
+        color: #222;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        margin-bottom: 8px;
+    }
+
+    .description {
+        margin-top: 0;
+        color: #666;
+    }
+
+    .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .panel {
+        background: #fff;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-top: 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    h3 {
+        margin-bottom: 8px;
+    }
+
+    label.field-label {
+        display: block;
+        font-weight: bold;
+        margin-top: 16px;
+        margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #bbb;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .skill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 10px;
+        background: #f4f4f4;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .custom-skill-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .custom-skill-row input {
+        flex: 1;
+    }
+
+    button {
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    button:hover {
+        opacity: .85;
+    }
+
+    .primary {
+        background: #333;
+        color: white;
+    }
+
+    .secondary {
+        background: #ddd;
+        color: #222;
+    }
+
+    .skill-delete {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .rating-box {
+        margin-top: 18px;
+    }
+
+    .rating-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+
+    .rating-actions {
+        margin-left: 8px;
+    }
+
+    .rating-clear {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .rating-end {
+        font-weight: bold;
+        margin: 0 5px;
+    }
+
+    .rating input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .rating label {
+        cursor: pointer;
+        font-size: 25px;
+        line-height: 1;
+        color: #555;
+    }
+
+    .rating label::before {
+        content: "〇";
+    }
+
+    .rating input:checked + label::before {
+        content: "●";
+    }
+
+    .buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+    }
+
+    #result {
+        min-height: 500px;
+        white-space: pre-wrap;
+        background: #fafafa;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 16px;
+        line-height: 1.7;
+        font-family: monospace;
+    }
+
+    .hint {
+        font-size: 13px;
+        color: #777;
+        margin-top: 5px;
+    }
+
+    @media (max-width: 800px) {
+        body { padding: 12px; }
+        .layout { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>TRPGセッション募集文メーカー</h1>
+    <p class="description">
+        このサイトはAIクッパ（ChatGPT）に作ってもらったよ。
+    </p>
+
+    <div class="layout">
+
+        <!-- 入力側 -->
+        <section class="panel">
+
+            <h2>募集内容</h2>
+
+            <label class="field-label" for="system">システム名</label>
+            <select id="system">
+                <option value="クトゥルフ神話TRPG 6版">クトゥルフ神話TRPG 6版</option>
+                <option value="クトゥルフ神話TRPG 7版">クトゥルフ神話TRPG 7版</option>
+                <option value="ソード・ワールド2.5">ソード・ワールド2.5</option>
+                <option value="その他">その他</option>
+            </select>
+        <div id="customSystemArea" class="hidden">
+          <label>システム名を入力
+            <input type="text" id="customSystem" placeholder="例：ダブルクロス3rd">
+          </label>
+        </div>
+
+            <label class="field-label" for="title">シナリオタイトル</label>
+            <input type="text" id="title" placeholder="例：○○の館">
+
+            <label class="field-label" for="synopsis">シナリオのあらすじ</label>
+            <textarea id="synopsis" placeholder="シナリオのあらすじを入力してください"></textarea>
+
+            <label class="field-label" for="time">想定時間</label>
+            <input type="text" id="time" placeholder="例：4～6時間">
+
+            <label class="field-label" for="players">募集人数</label>
+            <input type="text" id="players" placeholder="例：3～4人">
+
+            <h3>推奨技能</h3>
+            <p class="hint">よく使う技能はチェック、その他は追加できます。</p>
+
+            <div class="skills" id="skillList">
+
+                <label class="skill">
+                    <input type="checkbox" value="目星">
+                    目星
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="聞き耳">
+                    聞き耳
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="図書館">
+                    図書館
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="医学">
+                    医学
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="心理学">
+                    心理学
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="戦闘技能">
+                    戦闘技能
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="回避">
+                    回避
+                </label>
+
+                <label class="skill">
+                    <input type="checkbox" value="鍵開け">
+                    鍵開け
+                </label>
+
+            </div>
+
+            <div class="custom-skill-row">
+                <input type="text" id="customSkill" placeholder="追加する技能">
+                <button class="secondary" id="addSkill">技能を追加</button>
+            </div>
+
+            <div class="rating-box">
+                <div class="rating-title">ロスト率</div>
+                <div class="rating">
+                    <span class="rating-end">低</span>
+
+                    <input type="radio" name="loss" id="loss1" value="1">
+                    <label for="loss1"></label>
+                    <input type="radio" name="loss" id="loss2" value="2">
+                    <label for="loss2"></label>
+                    <input type="radio" name="loss" id="loss3" value="3">
+                    <label for="loss3"></label>
+                    <input type="radio" name="loss" id="loss4" value="4">
+                    <label for="loss4"></label>
+                    <input type="radio" name="loss" id="loss5" value="5">
+                    <label for="loss5"></label>
+                    <input type="radio" name="loss" id="loss6" value="6">
+                    <label for="loss6"></label>
+                    <input type="radio" name="loss" id="loss7" value="7">
+                    <label for="loss7"></label>
+                    <input type="radio" name="loss" id="loss8" value="8">
+                    <label for="loss8"></label>
+                    <input type="radio" name="loss" id="loss9" value="9">
+                    <label for="loss9"></label>
+                    <input type="radio" name="loss" id="loss10" value="10">
+                    <label for="loss10"></label>
+
+                    <span class="rating-end">高</span>
+                    <span class="rating-actions">
+                        <button type="button" class="secondary rating-clear" data-rating-name="loss">選択解除</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="rating-box">
+                <div class="rating-title">クトゥルフ神話要素</div>
+                <div class="rating">
+                    <span class="rating-end">低</span>
+
+                    <input type="radio" name="mythos" id="mythos1" value="1">
+                    <label for="mythos1"></label>
+                    <input type="radio" name="mythos" id="mythos2" value="2">
+                    <label for="mythos2"></label>
+                    <input type="radio" name="mythos" id="mythos3" value="3">
+                    <label for="mythos3"></label>
+                    <input type="radio" name="mythos" id="mythos4" value="4">
+                    <label for="mythos4"></label>
+                    <input type="radio" name="mythos" id="mythos5" value="5">
+                    <label for="mythos5"></label>
+                    <input type="radio" name="mythos" id="mythos6" value="6">
+                    <label for="mythos6"></label>
+                    <input type="radio" name="mythos" id="mythos7" value="7">
+                    <label for="mythos7"></label>
+                    <input type="radio" name="mythos" id="mythos8" value="8">
+                    <label for="mythos8"></label>
+                    <input type="radio" name="mythos" id="mythos9" value="9">
+                    <label for="mythos9"></label>
+                    <input type="radio" name="mythos" id="mythos10" value="10">
+                    <label for="mythos10"></label>
+
+                    <span class="rating-end">高</span>
+                    <span class="rating-actions">
+                        <button type="button" class="secondary rating-clear" data-rating-name="mythos">選択解除</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="rating-box">
+                <div class="rating-title">追加評価項目</div>
+                <p class="hint">自由に項目名を追加できます。評価を選択していない項目は募集文に出力されません。</p>
+
+                <div id="customRatingList"></div>
+
+                <div class="custom-skill-row">
+                    <input type="text" id="customRatingName" placeholder="例：戦闘難易度">
+                    <button class="secondary" id="addRating" type="button">評価項目を追加</button>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="primary" id="generate">募集文を生成</button>
+                <button class="secondary" id="reset">入力をリセット</button>
+            </div>
+
+        </section>
+
+
+        <!-- 出力側 -->
+        <section class="panel">
+
+            <h2>生成結果</h2>
+
+            <div id="result">ここに募集文が生成されます。</div>
+
+            <div class="buttons">
+                <button class="primary" id="copy">クリップボードへコピー</button>
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function getRating(name) {
+
+    const selected = document.querySelector(
+        `input[name="${name}"]:checked`
+    );
+
+    if (!selected) {
+        return null;
+    }
+
+    const value = Number(selected.value);
+    let result = "";
+
+    for (let i = 1; i <= 10; i++) {
+        result += (i === value) ? "●" : "〇";
+    }
+
+    return result;
+}
+
+
+function getSkills() {
+
+    const skills = [];
+
+    document
+        .querySelectorAll("#skillList input[type='checkbox']:checked")
+        .forEach(skill => {
+            skills.push(skill.value);
+        });
+
+    return skills;
+}
+
+
+function generateText() {
+
+    const selectedSystem = document.getElementById("system").value;
+      const system = selectedSystem === "その他"
+        ? (document.getElementById("customSystem").value.trim() || "")
+        : selectedSystem;
+    const title = document.getElementById("title").value;
+    const synopsis = document.getElementById("synopsis").value;
+    const time = document.getElementById("time").value;
+    const players = document.getElementById("players").value;
+
+    const skills = getSkills();
+
+    const skillText =
+        skills.length > 0
+            ? skills.join("、")
+            : "特になし";
+
+    const ratingLines = [];
+
+    const loss = getRating("loss");
+    if (loss) {
+        ratingLines.push(`■ロスト率\n低[${loss}]高`);
+    }
+
+    const mythos = getRating("mythos");
+    if (mythos) {
+        ratingLines.push(`■クトゥルフ神話要素\n低[${mythos}]高`);
+    }
+
+    document.querySelectorAll("#customRatingList .custom-rating").forEach(rating => {
+        const name = rating.dataset.ratingName;
+        const value = getRating(rating.dataset.ratingGroup);
+
+        if (value) {
+            ratingLines.push(`■${name}\n低[${value}]高`);
+        }
+    });
+
+    const ratingText = ratingLines.length > 0
+        ? `\n\n${ratingLines.join("\n\n")}`
+        : "";
+
+    const text =
+`「${title}」
+
+■システム
+【${system}】
+
+■あらすじ
+${synopsis}
+
+■概要
+想定時間：${time}
+募集人数：${players}
+
+■推奨技能
+${skillText}${ratingText}`;
+
+    document.getElementById("result").textContent = text;
+}
+
+
+document.getElementById("generate")
+    .addEventListener("click", generateText);
+
+
+document.getElementById("copy")
+    .addEventListener("click", async () => {
+
+        const text = document.getElementById("result").textContent;
+
+        if (!text || text === "ここに募集文が生成されます。") {
+            alert("先に募集文を生成してください。");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("募集文をコピーしました！\nEnjoy session");
+        } catch (error) {
+            alert("コピーに失敗しました。\n（選択でもコピーできますよ。）");
+        }
+    });
+
+
+document.getElementById("addSkill")
+    .addEventListener("click", () => {
+
+        const input = document.getElementById("customSkill");
+        const skillName = input.value.trim();
+
+        if (!skillName) return;
+
+        const label = document.createElement("label");
+        label.className = "skill";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = skillName;
+        checkbox.checked = true;
+
+        const text = document.createTextNode(skillName);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "secondary skill-delete";
+        deleteButton.textContent = "削除";
+
+        deleteButton.addEventListener("click", () => {
+            label.remove();
+        });
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        label.appendChild(deleteButton);
+
+        document.getElementById("skillList").appendChild(label);
+
+        input.value = "";
+        input.focus();
+    });
+
+
+
+// 評価項目の選択解除
+document.querySelectorAll(".rating-clear").forEach(button => {
+    button.addEventListener("click", () => {
+        const name = button.dataset.ratingName;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+            input.checked = false;
+        });
+    });
+});
+
+
+// 追加評価項目
+let customRatingCounter = 0;
+
+document.getElementById("addRating")
+    .addEventListener("click", () => {
+
+        const input = document.getElementById("customRatingName");
+        const ratingName = input.value.trim();
+
+        if (!ratingName) return;
+
+        customRatingCounter++;
+
+        const groupName = `customRating${customRatingCounter}`;
+
+        const box = document.createElement("div");
+        box.className = "rating-box custom-rating";
+        box.dataset.ratingName = ratingName;
+        box.dataset.ratingGroup = groupName;
+
+        const title = document.createElement("div");
+        title.className = "rating-title";
+        title.textContent = ratingName;
+
+        const rating = document.createElement("div");
+        rating.className = "rating";
+
+        const low = document.createElement("span");
+        low.className = "rating-end";
+        low.textContent = "低";
+        rating.appendChild(low);
+
+        for (let i = 1; i <= 10; i++) {
+            const radioId = `${groupName}_${i}`;
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = groupName;
+            radio.id = radioId;
+            radio.value = i;
+
+            const label = document.createElement("label");
+            label.htmlFor = radioId;
+
+            rating.appendChild(radio);
+            rating.appendChild(label);
+        }
+
+        const high = document.createElement("span");
+        high.className = "rating-end";
+        high.textContent = "高";
+        rating.appendChild(high);
+
+        const actions = document.createElement("span");
+        actions.className = "rating-actions";
+
+        const clearButton = document.createElement("button");
+        clearButton.type = "button";
+        clearButton.className = "secondary rating-clear";
+        clearButton.textContent = "選択解除";
+
+        clearButton.addEventListener("click", () => {
+            box.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+                input.checked = false;
+            });
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "secondary rating-clear";
+        deleteButton.textContent = "項目を削除";
+
+        deleteButton.addEventListener("click", () => {
+            box.remove();
+        });
+
+        actions.appendChild(clearButton);
+        actions.appendChild(deleteButton);
+        rating.appendChild(actions);
+
+        box.appendChild(title);
+        box.appendChild(rating);
+
+        document.getElementById("customRatingList").appendChild(box);
+
+        input.value = "";
+        input.focus();
+    });
+
+
+document.getElementById("reset")
+    .addEventListener("click", () => {
+
+        document.querySelectorAll(
+            "input[type='text'], textarea"
+        ).forEach(input => {
+            input.value = "";
+        });
+
+        document.querySelectorAll(
+            "#skillList input[type='checkbox']"
+        ).forEach(input => {
+            input.checked = false;
+        });
+
+        document.querySelectorAll(
+            "input[type='radio']"
+        ).forEach(input => {
+            input.checked = false;
+        });
+
+        document.getElementById("customRatingList").innerHTML = "";
+        customRatingCounter = 0;
+
+        document.getElementById("system").selectedIndex = 0;
+        document.getElementById("customSystem").value = "";
+        updateSystemInput();
+
+        document.getElementById("result").textContent =
+            "ここに募集文が生成されます。";
+    });
+
+
+    const systemSelect = document.getElementById("system");
+    const customSystemArea = document.getElementById("customSystemArea");
+    const customSystemInput = document.getElementById("customSystem");
+
+    function updateSystemInput() {
+      if (!systemSelect || !customSystemArea) return;
+      const isOther = systemSelect.value === "その他";
+      customSystemArea.classList.toggle("hidden", !isOther);
+    }
+
+    if (systemSelect) {
+      systemSelect.addEventListener("change", updateSystemInput);
+      updateSystemInput();
+    }
+
+</script>
+
+</body>
+</html>
